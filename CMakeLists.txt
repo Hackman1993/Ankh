@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.22)
+project(ZK_CPP_Spider)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+file(GLOB_RECURSE CPP_HEADERS source/*.h source/*.hpp)
+file(GLOB_RECURSE CPP_SOURCES source/*.cpp source/*.cc)
+file(GLOB_RECURSE CPP_TESTS tests/*.cpp)
+
+set(CMAKE_CXX_STANDARD 23)
+
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+
+include_directories(${Boost_INCLUDE_DIRS})
+
+add_library(ankh ${CPP_HEADERS} ${CPP_SOURCES})
+add_executable(BeastTest ${CPP_TESTS} ${CPP_HEADERS} ${CPP_SOURCES})
+target_link_libraries(BeastTest Boost::unit_test_framework)
