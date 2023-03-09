@@ -52,7 +52,7 @@ namespace ankh::html::css3::parser {
   rule<selector_parser_id, std::vector<ast::css_single_element>> css3_selector_parser_ = "CSS3Parser";
 
   auto not_parser__def = ":not(" > css3_selector_parser_ > ")";
-  auto single_selector_parser__def =  not_parser_|checked_selector_parser_ | enabled_selector_parser_ | only_of_type_selector_parser_ | empty_selector_parser_ | last_of_type_selector_parser_ | first_of_type_selector_parser_ | last_child_selector_parser_ | last_nth_child_selector_parser_ | nth_child_selector_parser_ | attribute_exists_parser_ | attribute_selector_parser_ | class_selector_parser_ | html_selector_parser_ | id_selector_parser_;
+  auto single_selector_parser__def =  not_parser_|checked_selector_parser_ | enabled_selector_parser_ | only_of_type_selector_parser_ | empty_selector_parser_ | last_of_type_selector_parser_ | first_of_type_selector_parser_ | last_child_selector_parser_ | last_nth_child_selector_parser_ | nth_child_selector_parser_ | attribute_exists_parser_ | attribute_selector_parser_ | class_selector_parser_  | id_selector_parser_|html_selector_parser_;
   auto css3_selector_parser__def = boost::spirit::x3::no_skip[*single_selector_parser_ >> *(operator_parser_ > single_selector_parser_)];
   //auto  = css3_selector_group_parser_];
   BOOST_SPIRIT_DEFINE(not_parser_, single_selector_parser_, css3_selector_parser_);

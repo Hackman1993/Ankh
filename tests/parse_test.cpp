@@ -1,7 +1,6 @@
-#include <boost/spirit/home/x3.hpp>
-#include "constructure/html_document.h"
-#include <boost/optional.hpp>
+
 #include <fstream>
+#include <ankh.h>
 #include <boost/test/unit_test.hpp>
 
 namespace spirit = boost::spirit::x3;
@@ -9,29 +8,14 @@ BOOST_AUTO_TEST_SUITE(Spirit)
 
   BOOST_AUTO_TEST_CASE(CSS3SelectorParserTest){
     std::string source = "<!DOCTYPE parser>\n"
- "<html>\n"
- "    <head>\n"
- "        <style type=\"text/css\" disabled>\n"
- "            p{\n"
- "        background-color: red;\n"
- "    }\n"
- "        </style>\n"
- "    </head>\n"
- "    <body>\n"
- "        <input type=\"checkbox\" checked/>\n"
- "        <audio checked></audio>\n"
- "        <select checked>\n"
- "            <option value=\"1\">data1</option>\n"
- "            <option value=\"2\" checked>data2</option>\n"
- "            <option value=\"3\" checked>data3</option>\n"
- "            <option value=\"4\">data4</option>\n"
- "            <option value=\"5\">data5</option>\n"
- "        </select>\n"
- "    </body>\n"
- "</html>";
+                         "<html>\n"
+                         "    <body>\n"
+                         "    <div id=\"test\"> </div>"
+                         "    </body>\n"
+                         "</html>";
     ankh::html::html_document document;
     bool result = document.parse(source);
-    auto ret = document.select(":not(option)");
+    auto ret = document.select("#test");
     for(auto &data: ret){
       std::cout << data.get().to_string() <<std::endl;
     }

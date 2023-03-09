@@ -13,5 +13,5 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(include)
 
 add_library(ankh ${CPP_HEADERS} ${CPP_SOURCES})
-add_executable(BeastTest ${CPP_TESTS} ${CPP_HEADERS} ${CPP_SOURCES})
-target_link_libraries(BeastTest Boost::unit_test_framework)
+add_executable(BeastTest ${CPP_TESTS})
+target_link_libraries(BeastTest Boost::unit_test_framework ankh)
