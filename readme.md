@@ -4,7 +4,7 @@ I need to parse html with cpp, and query it with CSS3 selectors. So I developed 
 
 # Progress
 
-Currently I'm working on it, it's **NOT** ready for production yet.
+Most works is done, but not fully tested, everyone is welcomed to join the test, writing test units, or just provide more ideas, it's still **NOT** ready for production yet.
 
 # Usage
 
@@ -24,11 +24,11 @@ Currently I'm working on it, it's **NOT** ready for production yet.
 
 ### Selector Not Supported 
 
-    Target Pseudo-class Selector, eg: :target
+    Some Pseudo-class Selector, eg: :target :root
     Pseudo-element Selector, eg: ::hover
 
 ## Difference
-:last-child selector's behavior is a little bit different from the original, please view those example below:
+some Pseudo selector's behavior is a little bit different from the original, please view those example below:
 
     <html>
         <head>
