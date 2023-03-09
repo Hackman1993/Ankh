@@ -4,9 +4,9 @@
 using namespace boost::spirit::x3;
 namespace ankh::html::css3::parser {
   struct selector_parser_id: html::common::error_handler{};
-  auto html_selector_parser_ = rule < selector_parser_id, ast::html_selector>{"ElementSelectorParser"} = (+~char_(" [>.,:~)"));
-  auto class_selector_parser_ = rule<selector_parser_id, ast::class_selector>{"ClassSelectorParser"} = '.' >> *~char_(" [>.,:~)");
-  auto id_selector_parser_ = rule<selector_parser_id, ast::id_selector>{"IDSelectorParser"} = '#' >> *~char_(" [>.,:~)");
+  auto html_selector_parser_ = rule < selector_parser_id, ast::html_selector>{"ElementSelectorParser"} = (+~char_("# [>.,:~)"));
+  auto class_selector_parser_ = rule<selector_parser_id, ast::class_selector>{"ClassSelectorParser"} = '.' >> *~char_("# [>.,:~)");
+  auto id_selector_parser_ = rule<selector_parser_id, ast::id_selector>{"IDSelectorParser"} = '#' >> *~char_("# [>.,:~)");
 
 
   auto nth_child_selector_constant = rule<selector_parser_id, ast::nth_child_constant>{"NthChildConstantSelectorParser"} = (":nth-child(" >> uint_ >> ")");
