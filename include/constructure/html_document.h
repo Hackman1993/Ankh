@@ -21,10 +21,8 @@ namespace ankh::html{
 
     bool parse(std::string source){
       auto ast = parser::parse_source(source);
-      if(ast.empty())
-        return false;
-
-      parser::parse_ast(ast,elements_,  structure_);
+      if(ast.empty()) return false;
+      return parser::parse_ast(ast,elements_,  structure_);
     }
   protected:
     std::unordered_map<html_element*, std::unique_ptr<html_element>> elements_;

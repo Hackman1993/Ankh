@@ -21,10 +21,12 @@ namespace ankh::html::css3{
   };
 
   struct selector_visitor {
-    explicit selector_visitor(std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>>& elements): inputs_(std::move(elements)){}
+    explicit selector_visitor(const std::unordered_map<html::html_element*, std::reference_wrapper<ankh::html::html_element>>& elements, const std::unordered_map<html::html_element*, std::reference_wrapper<ankh::html::html_element>>& base_input): inputs_(elements), base_input_(base_input){}
     using result_type = selector_visitor_result;
-    std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>> inputs_;
+    const std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>>& inputs_;
     std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>> result_;
+
+    const std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>>& base_input_;
 
     bool is_valid(ankh::html::html_element& element);
     // ID Selector Matcher

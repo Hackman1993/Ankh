@@ -1,4 +1,5 @@
 #include "parser/selector_visitor.h"
+#include "parser/selector_parser.h"
 namespace ankh::html::css3 {
   /*********************ID,Class,Element Selectors*********************/
   selector_visitor_result selector_visitor::operator ()(const ast::id_selector& selector) {
@@ -356,8 +357,13 @@ namespace ankh::html::css3 {
   }
 
   selector_visitor::result_type selector_visitor::operator()(const ast::not_ &selector) {
-
-    return css3::selector_visitor::result_type();
+    auto subquery_result = parser::execute_query_(selector.queries_, base_input_);
+    for(auto &element : inputs_)
+    {
+      if(!subquery_result.contains(element.first) && is_valid(element.second))
+        append_result(element.first, element.second);
+    }
+    return selector_visitor_result{std::move(result_), false};
   }
 
 

@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_SUITE(Spirit)
 
   BOOST_AUTO_TEST_CASE(CSS3SelectorParserTest){
     std::string source = "<!DOCTYPE parser>\n"
- "<parser>\n"
+ "<html>\n"
  "    <head>\n"
  "        <style type=\"text/css\" disabled>\n"
  "            p{\n"
@@ -28,10 +28,10 @@ BOOST_AUTO_TEST_SUITE(Spirit)
  "            <option value=\"5\">data5</option>\n"
  "        </select>\n"
  "    </body>\n"
- "</parser>";
+ "</html>";
     ankh::html::html_document document;
     bool result = document.parse(source);
-    auto ret = document.select(":checked");
+    auto ret = document.select(":not(option)");
     for(auto &data: ret){
       std::cout << data.get().to_string() <<std::endl;
     }
