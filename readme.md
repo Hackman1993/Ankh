@@ -4,7 +4,7 @@ I need to parse html with cpp, and query it with CSS3 selectors. So I developed 
 
 # Progress
 
-Currently I'm working on it, it's **NOT** ready for production yet.
+Most works is done, but not fully tested, everyone is welcomed to join the test, writing test units, or just provide more ideas, it's still **NOT** ready for production yet.
 
 # Usage
 
