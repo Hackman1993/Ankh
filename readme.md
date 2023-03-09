@@ -7,6 +7,23 @@ I need to parse html with cpp, and query it with CSS3 selectors. So I developed 
 Most works is done, but not fully tested, everyone is welcomed to join the test, writing test units, or just provide more ideas, it's still **NOT** ready for production yet.
 
 # Usage
+    #include <ankh.h>
+    #include <iostream>
+    int main()
+    {
+        std::string source = "<!DOCTYPE parser>\n"
+                             "<html>\n"
+                             "    <body>\n"
+                             "    <div id=\"test\"> </div>"
+                             "    </body>\n"
+                             "</html>";
+        ankh::html::html_document document;
+        bool result = document.parse(source);
+        auto ret = document.select("#test");
+        for(auto &data: ret){
+          std::cout << data.get().to_string() <<std::endl;
+        }
+    }
 
 ## Supporting Status
 
