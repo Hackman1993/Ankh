@@ -28,7 +28,7 @@ Most works is done, but not fully tested, everyone is welcomed to join the test,
     Pseudo-element Selector, eg: ::hover
 
 ## Difference
-:last-child selector's behavior is a little bit different from the original, please view those example below:
+some Pseudo selector's behavior is a little bit different from the original, please view those example below:
 
     <html>
         <head>
