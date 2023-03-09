@@ -2,16 +2,26 @@
 // Created by Hackman.Lo on 11/20/2022.
 //
 
-#ifndef ZK_CPP_SPIDER_TAG_H
-#define ZK_CPP_SPIDER_TAG_H
+#ifndef ZK_CPP_SPIDER_HTML_H
+#define ZK_CPP_SPIDER_HTML_H
 
 #include <string>
-#include <boost/optional.hpp>
-#include "attribute.h"
-#include <utility>
 #include <vector>
+#include <iostream>
+
+#include <boost/optional.hpp>
+#include <boost/fusion/support/pair.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-namespace ankh::ast{
+#include <boost/spirit/home/x3/support/ast/position_tagged.hpp>
+#include <boost/spirit/home/x3/support/utility/error_reporting.hpp>
+#include <boost/spirit/home/x3/support/utility/annotate_on_success.hpp>
+namespace ankh::html::ast{
+
+  struct attribute_data : boost::spirit::x3::position_tagged {
+    std::string name;
+    boost::optional<std::string> value;
+  };
+
   struct script_tag : boost::spirit::x3::position_tagged{
     std::vector<attribute_data> attributes_;
     std::string content_;
@@ -43,11 +53,11 @@ namespace ankh::ast{
 
   using boost::fusion::operator<<;
 }
+BOOST_FUSION_ADAPT_STRUCT(ankh::html::ast::attribute_data, name, value);
+BOOST_FUSION_ADAPT_STRUCT(ankh::html::ast::tag_header, name, attributes, closed);
+BOOST_FUSION_ADAPT_STRUCT(ankh::html::ast::script_tag, attributes_, content_);
+BOOST_FUSION_ADAPT_STRUCT(ankh::html::ast::tag_footer, name);
+BOOST_FUSION_ADAPT_STRUCT(ankh::html::ast::comment_tag, content);
+BOOST_FUSION_ADAPT_STRUCT(ankh::html::ast::doctype_tag, content);
 
-BOOST_FUSION_ADAPT_STRUCT(ankh::ast::tag_header, name, attributes, closed);
-BOOST_FUSION_ADAPT_STRUCT(ankh::ast::script_tag, attributes_, content_);
-BOOST_FUSION_ADAPT_STRUCT(ankh::ast::tag_footer, name);
-BOOST_FUSION_ADAPT_STRUCT(ankh::ast::comment_tag, content);
-BOOST_FUSION_ADAPT_STRUCT(ankh::ast::doctype_tag, content);
-
-#endif //ZK_CPP_SPIDER_TAG_H
+#endif //ZK_CPP_SPIDER_HTML_H

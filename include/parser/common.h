@@ -8,7 +8,8 @@
 #ifndef ZK_CPP_SPIDER_COMMON_H
 #define ZK_CPP_SPIDER_COMMON_H
 #include <boost/spirit/home/x3.hpp>
-namespace ankh::parser::common {
+#include <boost/spirit/home/x3/support/utility/error_reporting.hpp>
+namespace ankh::html::common {
     using namespace boost::spirit::x3;
     struct error_handler
     {

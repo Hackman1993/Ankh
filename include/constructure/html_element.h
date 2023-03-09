@@ -9,15 +9,12 @@
 #include <vector>
 #include <memory>
 #include <stack>
-#include "../ast/tag.h"
+#include "../ast/html.h"
 #include <boost/algorithm/string.hpp>
-namespace ankh::css3{
-  struct Visitor;
-}
 
 namespace ankh::html{
-  class html_element;
-  struct Visitor;
+  class html_visitor;
+  namespace css3{ struct selector_visitor;}
 
   class html_element {
   public:
@@ -59,14 +56,6 @@ namespace ankh::html{
 
 
     ~html_element(){
-//      switch (type_) {
-//        case ET_DOCTYPE:
-//        case ET_FOOTER:
-//          break;
-//        default:
-//          std::cout<< "Destructed:"<< content_ << std::endl;
-//      }
-
     }
 
     ELEMENT_TYPE type(){
@@ -161,14 +150,6 @@ namespace ankh::html{
     void set_closed(bool closed){
       is_closed_ = closed;
     }
-
-//    void descendants(std::vector<std::reference_wrapper<html_element>>& result){
-//      if(!children_) return;
-//      for(auto & child: *children_){
-//        result.emplace_back(child);
-//        child.get().descendants(result);
-//      }
-//    }
     void descendants(std::unordered_map<html_element*,std::reference_wrapper<html_element>>& result){
       if(!children_) return;
       for(auto & child: *children_){
@@ -177,7 +158,6 @@ namespace ankh::html{
       }
     }
   protected:
-
     std::string content_;
     ELEMENT_TYPE type_;
     std::unique_ptr<std::unordered_map<std::string, bool>> classes_;
@@ -186,57 +166,11 @@ namespace ankh::html{
     html_element* parent_ = nullptr;
     bool is_closed_ = true;
 
-    friend class ankh::html::Visitor;
-    friend class ankh::css3::Visitor;
+    friend class ankh::html::html_visitor;
+    friend class ankh::html::css3::selector_visitor;
   };
 
-  struct Visitor{
-    using result_type = std::unique_ptr<html_element>;
-    result_type operator()(const ankh::ast::tag_header& data)
-    {
-      std::unique_ptr<std::unordered_map<std::string, std::string>> attributes = std::make_unique<std::unordered_map<std::string, std::string>>();
-      for(const auto & attribute: data.attributes){
-        std::string lower_name = attribute.name;
-        std::string lower_value = attribute.value.get_value_or("true");
-        boost::algorithm::to_lower(lower_name);
-        boost::algorithm::to_lower(lower_value);
-        attributes->emplace(lower_name,lower_value);
-      }
-      return std::make_unique<html_element>(data.name, std::move(attributes), data.closed);
-    }
-    result_type operator()(const ankh::ast::tag_footer& data) const
-    {
-      return std::make_unique<html_element>(html_element::ET_FOOTER,data.name);
-    }
 
-    result_type operator()(const std::string& data) const
-    {
-      return std::make_unique<ankh::html::html_element>(html_element::ET_INNER_TEXT, data);;
-    }
-
-    result_type operator()(const ankh::ast::comment_tag& data) const
-    {
-      return std::make_unique<html_element>(html_element::ET_COMMENT, data.content);
-    }
-
-    result_type operator()(const ankh::ast::doctype_tag& data) const
-    {
-      return std::make_unique<html_element>(html_element::ET_DOCTYPE, data.content);
-    }
-
-    result_type operator()(const ankh::ast::script_tag& data) const
-    {
-      std::unique_ptr<std::unordered_map<std::string, std::string>> attributes = std::make_unique<std::unordered_map<std::string, std::string>>();
-      for(const auto & attribute: data.attributes_){
-        std::string lower_name = attribute.name;
-        std::string lower_value = attribute.value.get_value_or("true");
-        boost::algorithm::to_lower(lower_name);
-        boost::algorithm::to_lower(lower_value);
-        attributes->emplace(lower_name,lower_value);
-      }
-      return std::make_unique<html_element>("script", std::move(attributes), true);
-    }
-  };
 
 
 }

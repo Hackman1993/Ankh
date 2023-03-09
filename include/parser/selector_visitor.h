@@ -2,31 +2,29 @@
 // Created by Hackman.Lo on 2/21/2023.
 //
 
-#ifndef ZK_CPP_SPIDER_CSS3_SELECTORS_H
-#define ZK_CPP_SPIDER_CSS3_SELECTORS_H
+#ifndef ZK_CPP_SPIDER_SELECTOR_VISITOR_H
+#define ZK_CPP_SPIDER_SELECTOR_VISITOR_H
 #include <utility>
 #include <vector>
 #include <ranges>
-#include "../ast/css3_selector.h"
-#include "html_element.h"
+#include "../ast/selector.h"
+#include "../constructure/html_element.h"
 #include <boost/bind/bind.hpp>
 #include <boost/range/adaptor/reversed.hpp>
-
 namespace ankh::html{
   class html_element;
 }
-namespace ankh::css3{
-  struct VisitorHelper{
+namespace ankh::html::css3{
+  struct selector_visitor_result{
     std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>> result_;
     bool final = false;
   };
 
-  struct Visitor {
-    explicit Visitor(std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>>& elements): inputs_(std::move(elements)){}
-    using result_type = VisitorHelper;
+  struct selector_visitor {
+    explicit selector_visitor(std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>>& elements): inputs_(std::move(elements)){}
+    using result_type = selector_visitor_result;
     std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>> inputs_;
     std::unordered_map<html::html_element*,std::reference_wrapper<ankh::html::html_element>> result_;
-
 
     bool is_valid(ankh::html::html_element& element);
     // ID Selector Matcher
@@ -63,16 +61,17 @@ namespace ankh::css3{
     result_type operator()(const ast::enabled& selector);
     // Checked Selector Matcher
     result_type operator()(const ast::checked& selector);
+    // Not Selector Matcher
+    result_type operator()(const ast::not_& selector);
     // Attribute Exists Matcher
     result_type operator()( const ast::attribute_exists_selector& selector);
     // Attribute Selector Matcher
     result_type operator()( const ast::attribute_selector& selector);
     // Descendants Operator Matcher
     result_type operator()(const ast::selector_operator& selector);
-
   private:
     void append_result(html::html_element* pointer, std::reference_wrapper<ankh::html::html_element> element);
   };
 }
 
-#endif //ZK_CPP_SPIDER_CSS3_SELECTORS_H
+#endif //ZK_CPP_SPIDER_SELECTOR_VISITOR_H

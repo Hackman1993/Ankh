@@ -1,42 +1,41 @@
-#include "css3_selectors.h"
-
-namespace ankh::css3 {
+#include "parser/selector_visitor.h"
+namespace ankh::html::css3 {
   /*********************ID,Class,Element Selectors*********************/
-  VisitorHelper Visitor::operator ()(const ast::id_selector& selector) {
+  selector_visitor_result selector_visitor::operator ()(const ast::id_selector& selector) {
     for(auto &element: inputs_){
       if(is_valid(element.second) && element.second.get().attributes_ && (*element.second.get().attributes_)["id"] == selector.id_){
         append_result(element.first, element.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
-  VisitorHelper Visitor::operator()(const ast::class_selector &selector) {
+  selector_visitor_result selector_visitor::operator()(const ast::class_selector &selector) {
     for(auto &element: inputs_){
       if(is_valid(element.second) && element.second.get().classes_ && element.second.get().classes_->contains(selector.name_)){
         append_result(element.first, element.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
-  Visitor::result_type Visitor::operator()(const ast::html_selector &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::html_selector &selector) {
     for(auto &element: inputs_){
       if(is_valid(element.second) && element.second.get().content_ == selector.tag_){
         append_result(element.first, element.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
   /*********************Attribute Selectors*********************/
-  VisitorHelper Visitor::operator()(const ast::attribute_exists_selector &selector) {
+  selector_visitor_result selector_visitor::operator()(const ast::attribute_exists_selector &selector) {
     for(auto &element: inputs_){
       if(is_valid(element.second) && element.second.get().attributes_ && element.second.get().attributes_->contains(selector.attr_name_)) {
         append_result(element.first, element.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
-  VisitorHelper Visitor::operator()(const ast::attribute_selector &selector) {
+  selector_visitor_result selector_visitor::operator()(const ast::attribute_selector &selector) {
     for(auto &element: inputs_){
       if(is_valid(element.second) && element.second.get().attributes_ ){
         bool match = false;
@@ -56,17 +55,17 @@ namespace ankh::css3 {
         }
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
   /*********************Pseudo-class Selectors*********************/
   /// NthChild Selectors
-  Visitor::result_type Visitor::operator()(const ast::nth_child_variant &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::nth_child_variant &selector) {
 
     int additional_data_ = 0;
     if(selector.optional_.has_value())
     {
-      additional_data_ = selector.optional_->operator_=='+' ? selector.optional_->additional_data_:selector.optional_->additional_data_*-1;
+      additional_data_ = selector.optional_->operator_=='+' ? static_cast<int>(selector.optional_->additional_data_):static_cast<int>(selector.optional_->additional_data_)*-1;
     }
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
@@ -79,15 +78,15 @@ namespace ankh::css3 {
         {
           append_result(&children_vec[i-1].get(),children_vec[i-1].get());
         }else if(additional_data_>=0 && children_vec.size() >=selector.factor_*i + additional_data_){
-          int result_index = selector.factor_*i + additional_data_-1;
+          int result_index = static_cast<int>(selector.factor_)*i + additional_data_-1;
           if(result_index >=0 && result_index < children_vec.size())
             append_result(&children_vec[result_index].get(),children_vec[result_index]);
         }
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
-  Visitor::result_type Visitor::operator()(const ast::nth_child_odd_even &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::nth_child_odd_even &selector) {
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty()||parent_filter.contains(element.second.get().parent_)) continue;
@@ -100,9 +99,9 @@ namespace ankh::css3 {
         index++;
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
-  Visitor::result_type Visitor::operator()(const ast::nth_child_constant &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::nth_child_constant &selector) {
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty()||parent_filter.contains(element.second.get().parent_)) continue;
@@ -118,11 +117,11 @@ namespace ankh::css3 {
         index++;
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
   /// NthLastChild Selectors
-  Visitor::result_type Visitor::operator()(const ast::last_nth_child_odd_even &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::last_nth_child_odd_even &selector) {
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty()||parent_filter.contains(element.second.get().parent_)) continue;
@@ -135,9 +134,9 @@ namespace ankh::css3 {
         index++;
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
-  Visitor::result_type Visitor::operator()(const ast::last_nth_child_constant &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::last_nth_child_constant &selector) {
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty() ||parent_filter.contains(element.second.get().parent_)) continue;
@@ -153,13 +152,13 @@ namespace ankh::css3 {
         index++;
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
-  Visitor::result_type Visitor::operator()(const ast::last_nth_child_variant &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::last_nth_child_variant &selector) {
     int additional_data_ = 0;
     if(selector.optional_.has_value())
     {
-      additional_data_ = selector.optional_->operator_=='+' ? selector.optional_->additional_data_:selector.optional_->additional_data_*-1;
+      additional_data_ = selector.optional_->operator_=='+' ? static_cast<int>(selector.optional_->additional_data_):static_cast<int>(selector.optional_->additional_data_)*-1;
     }
     // variant to prevent match same parent many times
     std::unordered_map<html::html_element*, bool> parent_filter;
@@ -179,11 +178,11 @@ namespace ankh::css3 {
         }
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
   /*********************Operator Selectors*********************/
-  VisitorHelper Visitor::operator()(const ast::selector_operator &selector) {
+  selector_visitor_result selector_visitor::operator()(const ast::selector_operator &selector) {
     // Descendants Operator
     if(selector.operator_ == ' ')
     {
@@ -234,22 +233,22 @@ namespace ankh::css3 {
     }
       // Comma Operator
     else if(selector.operator_ == ','){
-      return VisitorHelper{std::move(inputs_), true};
+      return selector_visitor_result{std::move(inputs_), true};
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
-  bool Visitor::is_valid(html::html_element &element) {
+  bool selector_visitor::is_valid(html::html_element &element) {
     return
       // InnerText,Footer and Comment shouldn't join the selector match
         element.type_ == html::html_element::ET_NORMAL || element.type_ == html::html_element::ET_SCRIPT;
         ;
   }
-  void Visitor::append_result(html::html_element *pointer, std::reference_wrapper<ankh::html::html_element> element){
+  void selector_visitor::append_result(html::html_element *pointer, std::reference_wrapper<html::html_element> element){
     if(!result_.contains(pointer)) result_.emplace(pointer, element);
   }
 
-  Visitor::result_type Visitor::operator()(const ast::last_child &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::last_child &selector) {
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty()) continue;
       auto children_vec = element.second.get().parent_->children();
@@ -258,10 +257,10 @@ namespace ankh::css3 {
         append_result(element.first,element.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
-  Visitor::result_type Visitor::operator()(const ast::first_of_type &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::first_of_type &selector) {
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty() ||parent_filter.contains(element.second.get().parent_)) continue;
@@ -279,10 +278,10 @@ namespace ankh::css3 {
         append_result(result.second.first, result.second.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
-  Visitor::result_type Visitor::operator()(const ast::last_of_type &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::last_of_type &selector) {
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty() ||parent_filter.contains(element.second.get().parent_)) continue;
@@ -300,10 +299,10 @@ namespace ankh::css3 {
         append_result(result.second.first, result.second.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
-  Visitor::result_type Visitor::operator()(const ast::only_of_type &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::only_of_type &selector) {
     std::unordered_map<html::html_element*, bool> parent_filter;
     for(auto &element: inputs_){
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty() ||parent_filter.contains(element.second.get().parent_)) continue;
@@ -328,35 +327,38 @@ namespace ankh::css3 {
         append_result(result.second.first, result.second.second);
       }
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
-  Visitor::result_type Visitor::operator()(const ast::empty_type &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::empty_type &selector) {
     for(auto &element: inputs_){
-      if(!is_valid(element.second) || element.second.get().children().size()>0) continue;
+      if(!is_valid(element.second) || !element.second.get().children().empty()) continue;
       append_result(element.first, element.second);
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
-  Visitor::result_type Visitor::operator()(const ast::enabled &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::enabled &selector) {
     for(auto &element: inputs_){
       if(!is_valid(element.second) || !element.second.get().can_be_disabled()) continue;
       if(element.second.get().disabled() == !selector.enabled_)
         append_result(element.first, element.second);
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
-  Visitor::result_type Visitor::operator()(const ast::checked &selector) {
+  selector_visitor::result_type selector_visitor::operator()(const ast::checked &selector) {
     for(auto &element: inputs_){
       if(element.second.get().checked())
         append_result(element.first, element.second);
     }
-    return VisitorHelper{std::move(result_), false};
+    return selector_visitor_result{std::move(result_), false};
   }
 
+  selector_visitor::result_type selector_visitor::operator()(const ast::not_ &selector) {
 
+    return css3::selector_visitor::result_type();
+  }
 
 
 }
