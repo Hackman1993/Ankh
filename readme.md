@@ -24,7 +24,7 @@ Currently I'm working on it, it's **NOT** ready for production yet.
 
 ### Selector Not Supported 
 
-    Target Pseudo-class Selector, eg: :target
+    Some Pseudo-class Selector, eg: :target :root
     Pseudo-element Selector, eg: ::hover
 
 ## Difference
