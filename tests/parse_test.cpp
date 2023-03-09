@@ -21,18 +21,4 @@ BOOST_AUTO_TEST_SUITE(Spirit)
     }
     BOOST_CHECK(result);
   }
-
-
-
-  BOOST_AUTO_TEST_CASE(HTMLParseTest) {
-//    std::string source = "<div id='bcd'>BCD<script>console.log('bcd')</script>AA<div/></div>";
-//    ankh::html::html_document document;
-//    bool result = document.parse(source);
-//    BOOST_CHECK(result);
-  }
-
-  BOOST_AUTO_TEST_CASE(multiple_attributes) {
-
-  }
-
 BOOST_AUTO_TEST_SUITE_END()
