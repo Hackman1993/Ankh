@@ -1,6 +1,6 @@
 # Why
 
-I need to parse html with cpp, and query it with CSS3 selectors. So I developed this library with Boost Spirit X3
+I need to parse html with cpp, and query it with CSS3 selectors. So I developed this library based on Boost Spirit X3
 
 # Progress
 
