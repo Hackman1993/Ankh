@@ -10,6 +10,7 @@
 #include <memory>
 #include <stack>
 #include "../ast/html.h"
+#include <unordered_map>
 #include <boost/algorithm/string.hpp>
 
 namespace ankh::html{

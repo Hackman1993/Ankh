@@ -1,5 +1,6 @@
 #include "parser/selector_visitor.h"
 #include "parser/selector_parser.h"
+#include <boost/foreach.hpp>
 namespace ankh::html::css3 {
   /*********************ID,Class,Element Selectors*********************/
   selector_visitor_result selector_visitor::operator ()(const ast::id_selector& selector) {
@@ -128,12 +129,19 @@ namespace ankh::html::css3 {
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty()||parent_filter.contains(element.second.get().parent_)) continue;
       parent_filter.emplace(element.second.get().parent_,true);
       unsigned int index = 1;
-      for(auto &child : std::ranges::reverse_view(element.second.get().parent_->children()))
-      {
+
+      BOOST_REVERSE_FOREACH(auto &child, element.second.get().parent_->children()){
         if(index%2 == selector.odd_ && inputs_.contains(&child.get()))
           append_result(&child.get(),child);
         index++;
       }
+      // Comment this line because of Clang doesn't fully support ranges
+//      for(auto &child : std::ranges::reverse_view(element.second.get().parent_->children()))
+//      {
+//        if(index%2 == selector.odd_ && inputs_.contains(&child.get()))
+//          append_result(&child.get(),child);
+//        index++;
+//      }
     }
     return selector_visitor_result{std::move(result_), false};
   }
@@ -143,8 +151,7 @@ namespace ankh::html::css3 {
       if(!is_valid(element.second.get())||!element.second.get().parent_||!element.second.get().parent_->children_||element.second.get().parent_->children().empty() ||parent_filter.contains(element.second.get().parent_)) continue;
       parent_filter.emplace(element.second.get().parent_,true);
       unsigned int index = 1;
-      for(auto &child :std::ranges::reverse_view(element.second.get().parent_->children()))
-      {
+      BOOST_REVERSE_FOREACH(auto &child, element.second.get().parent_->children()){
         if(index == selector.nth_ && inputs_.contains(&child.get()))
         {
           append_result(&child.get(),child);
@@ -152,6 +159,16 @@ namespace ankh::html::css3 {
         }
         index++;
       }
+
+//      for(auto &child :std::ranges::reverse_view(element.second.get().parent_->children()))
+//      {
+//        if(index == selector.nth_ && inputs_.contains(&child.get()))
+//        {
+//          append_result(&child.get(),child);
+//          break;
+//        }
+//        index++;
+//      }
     }
     return selector_visitor_result{std::move(result_), false};
   }
@@ -289,12 +306,18 @@ namespace ankh::html::css3 {
       parent_filter.emplace(element.second.get().parent_,true);
       auto children_vec = element.second.get().parent_->children();
       std::unordered_map<std::string, std::pair<html::html_element*,std::reference_wrapper<html::html_element>>> type_map;
-      for(auto &child : std::ranges::reverse_view(children_vec))
-      {
+
+      BOOST_REVERSE_FOREACH(auto &child, children_vec){
         std::string tag_name = child.get().type_==html::html_element::ET_SCRIPT? "script":child.get().content();
         if(type_map.contains(tag_name) || !inputs_.contains(&child.get())) continue;
         type_map.emplace(tag_name,std::make_pair(&child.get(),child));
       }
+//      for(auto &child : std::ranges::reverse_view(children_vec))
+//      {
+//        std::string tag_name = child.get().type_==html::html_element::ET_SCRIPT? "script":child.get().content();
+//        if(type_map.contains(tag_name) || !inputs_.contains(&child.get())) continue;
+//        type_map.emplace(tag_name,std::make_pair(&child.get(),child));
+//      }
 
       for(auto &result: type_map){
         append_result(result.second.first, result.second.second);

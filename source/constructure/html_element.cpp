@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <stack>
+#include <ranges>
 #include "ast/html.h"
 #include <boost/algorithm/string.hpp>
 #include "constructure/html_element.h"
@@ -104,9 +105,11 @@ namespace ankh::html{
     {
       std::vector<std::string> str_list={"input", "button", "select", "textarea", "optgroup", "option", "fieldset"};
       // Type can't be disabled , directly return false
-      if(type_ != ET_NORMAL || !std::ranges::any_of(str_list, [&](const std::string& str){ return str == content_;}))
-        return false;
-      return true;
+      for(auto & type: str_list)
+      {
+        if(type_ == ET_NORMAL || content_ == type) return true;
+      }
+      return false;
     }
 
     bool html_element::disabled(){

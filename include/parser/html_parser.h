@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "../ast/html.h"
+#include <unordered_map>
 namespace ankh::html{
 
   class html_element;
